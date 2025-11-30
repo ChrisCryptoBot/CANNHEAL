@@ -5,12 +5,14 @@ import { Loader2 } from 'lucide-react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
   isLoading?: boolean
   children: ReactNode
 }
 
 export function Button({
   variant = 'primary',
+  size = 'md',
   isLoading = false,
   children,
   className = '',
@@ -25,7 +27,13 @@ export function Button({
     ghost: 'btn-ghost',
   }
 
-  const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${className}`.trim()
+  const sizeStyles = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: '',
+    lg: 'px-6 py-3 text-lg',
+  }
+
+  const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`.trim()
 
   return (
     <button
