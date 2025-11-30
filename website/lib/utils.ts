@@ -20,9 +20,41 @@ export function formatDate(date: Date | string): string {
   })
 }
 
-// Calculate CBD dosage based on pet weight
+// Calculate base CBD dosage based on pet type and weight
 export function calculateDosage(
   petWeightLbs: number,
+  petType: 'DOG' | 'CAT' | 'HORSE'
+): number {
+  // Convert lbs to kg
+  const petWeightKg = petWeightLbs * 0.453592
+
+  // Different dosing formulas by pet type:
+  // Dogs: 0.35mg per kg (industry standard)
+  // Cats: 0.25mg per kg (more sensitive metabolism)
+  // Horses: 0.25mg per kg (but horses are much heavier, typically 800-1200 lbs)
+  let mgPerKg: number
+
+  switch (petType) {
+    case 'DOG':
+      mgPerKg = 0.35
+      break
+    case 'CAT':
+      mgPerKg = 0.25
+      break
+    case 'HORSE':
+      mgPerKg = 0.25
+      break
+    default:
+      mgPerKg = 0.35
+  }
+
+  return Math.round(petWeightKg * mgPerKg)
+}
+
+// Calculate product supply duration
+export function calculateProductSupply(
+  petWeightLbs: number,
+  petType: 'DOG' | 'CAT' | 'HORSE',
   cbdMgPerServing: number,
   servingsPerUnit: number
 ): {
@@ -30,16 +62,8 @@ export function calculateDosage(
   recommendedServings: number
   daysSupply: number
 } {
-  // Convert lbs to kg
-  const petWeightKg = petWeightLbs * 0.453592
-
-  // Recommended: 0.2-0.5 mg CBD/kg (using 0.35 as middle ground)
-  const recommendedDailyMg = Math.round(petWeightKg * 0.35)
-
-  // Calculate servings needed
+  const recommendedDailyMg = calculateDosage(petWeightLbs, petType)
   const recommendedServings = Math.ceil(recommendedDailyMg / cbdMgPerServing)
-
-  // Calculate days supply
   const daysSupply = Math.floor(servingsPerUnit / recommendedServings)
 
   return {

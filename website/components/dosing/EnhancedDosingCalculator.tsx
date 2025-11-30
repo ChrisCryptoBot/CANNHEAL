@@ -8,22 +8,157 @@ import { Modal } from '@/components/ui/Modal'
 import { calculateDosage } from '@/lib/utils'
 import Link from 'next/link'
 
-type PetType = 'DOG' | 'CAT'
-type Condition = 'general' | 'mild' | 'moderate' | 'severe'
+type PetType = 'DOG' | 'CAT' | 'HORSE'
+type Condition =
+  | 'general'
+  | 'anxiety'
+  | 'pain'
+  | 'mobility'
+  | 'skin'
+  | 'digestive'
+  | 'performance'
 type Frequency = 'once' | 'twice'
 
 const conditions = [
-  { id: 'general', name: 'General Wellness', multiplier: 1 },
-  { id: 'mild', name: 'Mild Symptoms (Occasional anxiety, minor discomfort)', multiplier: 1.5 },
-  { id: 'moderate', name: 'Moderate Symptoms (Regular anxiety, joint stiffness)', multiplier: 2 },
-  { id: 'severe', name: 'Severe Symptoms (Chronic pain, severe anxiety)', multiplier: 2.5 },
+  { id: 'general', name: 'General Wellness / Daily Support', multiplier: 1 },
+  { id: 'anxiety', name: 'Anxiety / Calming / Behavioral Issues', multiplier: 1.5 },
+  { id: 'pain', name: 'Pain Management / Inflammation', multiplier: 2 },
+  { id: 'mobility', name: 'Mobility / Joint Support / Arthritis', multiplier: 2 },
+  { id: 'skin', name: 'Skin & Coat / Allergies / Itching', multiplier: 1.5 },
+  { id: 'digestive', name: 'Digestive / Gut Support', multiplier: 1.5 },
+  { id: 'performance', name: 'Performance Recovery (Horses)', multiplier: 1.5 },
 ]
 
-const mockProducts = [
-  { name: 'CBD Oil 500mg', cbdPerServing: 16, servingsPerUnit: 30, price: 4999 },
-  { name: 'CBD Oil 1000mg', cbdPerServing: 33, servingsPerUnit: 30, price: 7999 },
-  { name: 'CBD Chews 300mg', cbdPerServing: 5, servingsPerUnit: 60, price: 3999 },
-]
+// TODO: Replace with actual product data from API
+const mockProducts = {
+  DOG: [
+    {
+      name: 'Daily Wellness Oil - Small Dogs',
+      cbdPerServing: 10,
+      servingsPerUnit: 30,
+      price: 3999,
+      category: 'oil',
+    },
+    {
+      name: 'Daily Wellness Oil - Medium Dogs',
+      cbdPerServing: 20,
+      servingsPerUnit: 30,
+      price: 5999,
+      category: 'oil',
+    },
+    {
+      name: 'Daily Wellness Oil - Large Dogs',
+      cbdPerServing: 35,
+      servingsPerUnit: 30,
+      price: 7999,
+      category: 'oil',
+    },
+    {
+      name: 'Calming Formula Chews',
+      cbdPerServing: 15,
+      servingsPerUnit: 30,
+      price: 4999,
+      category: 'chews',
+      flavor: 'Chicken',
+    },
+    {
+      name: 'Mobility + Joint Support Oil',
+      cbdPerServing: 25,
+      servingsPerUnit: 30,
+      price: 6999,
+      category: 'oil',
+    },
+    {
+      name: 'Mobility Joint Chews',
+      cbdPerServing: 20,
+      servingsPerUnit: 30,
+      price: 5999,
+      category: 'chews',
+      flavor: 'Bacon',
+    },
+    {
+      name: 'Skin & Coat Support Oil',
+      cbdPerServing: 15,
+      servingsPerUnit: 30,
+      price: 4999,
+      category: 'oil',
+    },
+    {
+      name: 'Digestive Support Oil',
+      cbdPerServing: 15,
+      servingsPerUnit: 30,
+      price: 4999,
+      category: 'oil',
+    },
+  ],
+  CAT: [
+    {
+      name: 'Cat-Safe Wellness Oil (Unflavored)',
+      cbdPerServing: 5,
+      servingsPerUnit: 30,
+      price: 3499,
+      category: 'oil',
+    },
+    {
+      name: 'Cat Calming Drops (Unflavored)',
+      cbdPerServing: 8,
+      servingsPerUnit: 30,
+      price: 3999,
+      category: 'drops',
+    },
+    {
+      name: 'Cat-Safe Wellness Oil - Medium Strength',
+      cbdPerServing: 12,
+      servingsPerUnit: 30,
+      price: 4999,
+      category: 'oil',
+    },
+    {
+      name: 'Simple Ingredient Cat Treats',
+      cbdPerServing: 5,
+      servingsPerUnit: 30,
+      price: 3499,
+      category: 'treats',
+    },
+  ],
+  HORSE: [
+    {
+      name: 'Equine High-Strength Oil 3000mg',
+      cbdPerServing: 100,
+      servingsPerUnit: 30,
+      price: 14999,
+      category: 'oil',
+    },
+    {
+      name: 'Equine High-Strength Oil 5000mg',
+      cbdPerServing: 167,
+      servingsPerUnit: 30,
+      price: 22999,
+      category: 'oil',
+    },
+    {
+      name: 'Equine Performance Recovery Oil',
+      cbdPerServing: 150,
+      servingsPerUnit: 30,
+      price: 19999,
+      category: 'oil',
+    },
+    {
+      name: 'Joint & Muscle Topical for Horses',
+      cbdPerServing: 200,
+      servingsPerUnit: 15,
+      price: 12999,
+      category: 'topical',
+    },
+    {
+      name: 'Equine Feed-Ready Supplement (Pelleted)',
+      cbdPerServing: 100,
+      servingsPerUnit: 30,
+      price: 16999,
+      category: 'supplement',
+    },
+  ],
+}
 
 export function EnhancedDosingCalculator() {
   const [petType, setPetType] = useState<PetType>('DOG')
@@ -46,9 +181,12 @@ export function EnhancedDosingCalculator() {
     setShowResults(true)
   }
 
-  const recommendedProduct = mockProducts.find(
-    (p) => p.cbdPerServing >= perDoseDosage * 0.8 && p.cbdPerServing <= perDoseDosage * 1.5
-  ) || mockProducts[0]
+  // Get pet-specific products and find best match
+  const petProducts = mockProducts[petType] || []
+  const recommendedProduct =
+    petProducts.find(
+      (p) => p.cbdPerServing >= perDoseDosage * 0.8 && p.cbdPerServing <= perDoseDosage * 1.5
+    ) || petProducts[0]
 
   return (
     <section className="py-20 md:py-28">
@@ -69,7 +207,7 @@ export function EnhancedDosingCalculator() {
                 <label className="block text-sm font-medium text-text-primary mb-3">
                   Pet Type
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <button
                     onClick={() => setPetType('DOG')}
                     className={`p-4 rounded-lg border-2 transition-all ${
@@ -79,7 +217,7 @@ export function EnhancedDosingCalculator() {
                     }`}
                   >
                     <div className="text-2xl mb-1">🐕</div>
-                    <div className="font-medium">Dog</div>
+                    <div className="font-medium text-sm">Dog</div>
                   </button>
                   <button
                     onClick={() => setPetType('CAT')}
@@ -90,7 +228,18 @@ export function EnhancedDosingCalculator() {
                     }`}
                   >
                     <div className="text-2xl mb-1">🐈</div>
-                    <div className="font-medium">Cat</div>
+                    <div className="font-medium text-sm">Cat</div>
+                  </button>
+                  <button
+                    onClick={() => setPetType('HORSE')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      petType === 'HORSE'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">🐴</div>
+                    <div className="font-medium text-sm">Horse</div>
                   </button>
                 </div>
               </div>
@@ -231,31 +380,48 @@ export function EnhancedDosingCalculator() {
               </div>
 
               {/* Product Recommendation */}
-              <div className="card bg-gray-50">
-                <div className="flex items-center gap-2 mb-4">
-                  <Package className="w-5 h-5 text-primary" />
-                  <h3 className="font-bold text-text-primary">Recommended Product</h3>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <h4 className="font-bold text-text-primary mb-2">
-                    {recommendedProduct.name}
-                  </h4>
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-2xl font-bold text-primary">
-                      ${(recommendedProduct.price / 100).toFixed(2)}
-                    </span>
+              {recommendedProduct && (
+                <div className="card bg-gray-50">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Package className="w-5 h-5 text-primary" />
+                    <h3 className="font-bold text-text-primary">Recommended Product</h3>
                   </div>
-                  <div className="text-sm text-text-secondary mb-4">
-                    {recommendedProduct.cbdPerServing}mg CBD per serving •{' '}
-                    {recommendedProduct.servingsPerUnit} servings
+                  <div className="bg-white rounded-lg p-4">
+                    <h4 className="font-bold text-text-primary mb-2">
+                      {recommendedProduct.name}
+                    </h4>
+                    {'flavor' in recommendedProduct && recommendedProduct.flavor && (
+                      <div className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded mb-2">
+                        {recommendedProduct.flavor} Flavor
+                      </div>
+                    )}
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <span className="text-2xl font-bold text-primary">
+                        ${(recommendedProduct.price / 100).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="text-sm text-text-secondary mb-4">
+                      {recommendedProduct.cbdPerServing}mg CBD per serving •{' '}
+                      {recommendedProduct.servingsPerUnit} servings
+                      {petType === 'CAT' && (
+                        <div className="mt-2 text-xs text-primary">
+                          ✓ Cat-safe formula • Unflavored • No harmful terpenes
+                        </div>
+                      )}
+                      {petType === 'HORSE' && (
+                        <div className="mt-2 text-xs text-primary">
+                          ✓ High-strength equine formula
+                        </div>
+                      )}
+                    </div>
+                    <Link href="/products">
+                      <Button variant="primary" className="w-full">
+                        View Product
+                      </Button>
+                    </Link>
                   </div>
-                  <Link href="/products">
-                    <Button variant="primary" className="w-full">
-                      View Product
-                    </Button>
-                  </Link>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
@@ -284,10 +450,18 @@ export function EnhancedDosingCalculator() {
             <div>
               <p className="font-medium text-text-primary mb-2">Important Points:</p>
               <ul className="space-y-2 ml-4 list-disc">
-                <li>Dosage recommendations are based on veterinary research using 0.35mg CBD per kg body weight</li>
+                <li>
+                  Dosage recommendations are based on veterinary research (0.35mg/kg for dogs,
+                  0.25mg/kg for cats and horses)
+                </li>
                 <li>Individual pets may require adjustments based on their response</li>
                 <li>Start low and increase gradually to find the optimal dose</li>
                 <li>CBD can interact with certain medications - consult your vet</li>
+                <li>
+                  Cats are more sensitive - avoid citrus, peppermint, and essential oils in
+                  formulations
+                </li>
+                <li>Horses: ideal for inflammation, joint support, performance recovery</li>
                 <li>Not intended to diagnose, treat, cure, or prevent any disease</li>
                 <li>These statements have not been evaluated by the FDA</li>
               </ul>

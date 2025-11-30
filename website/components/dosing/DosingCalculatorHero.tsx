@@ -23,8 +23,8 @@ export function DosingCalculatorHero() {
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Find the perfect CBD dosage for your pet based on their weight, condition, and
-            individual needs. Our calculator uses veterinary-approved formulas.
+            Find the perfect CBD dosage for your dog, cat, or horse based on their weight,
+            condition, and individual needs. Our calculator uses veterinary-approved formulas.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
@@ -32,15 +32,15 @@ export function DosingCalculatorHero() {
               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Calculator className="w-6 h-6" />
               </div>
-              <div className="text-3xl font-bold mb-1">0.35mg</div>
-              <div className="text-sm text-white/80">Per kg body weight</div>
+              <div className="text-3xl font-bold mb-1">3 Species</div>
+              <div className="text-sm text-white/80">Dogs • Cats • Horses</div>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Award className="w-6 h-6" />
               </div>
               <div className="text-3xl font-bold mb-1">Vet</div>
-              <div className="text-sm text-white/80">Approved Formula</div>
+              <div className="text-sm text-white/80">Approved Formulas</div>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
