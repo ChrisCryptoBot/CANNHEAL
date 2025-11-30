@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react'
 
 const footerLinks = {
@@ -37,11 +38,17 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 mb-4 group">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
-                <span className="text-primary text-2xl font-bold">C</span>
+            <Link href="/" className="inline-flex items-center mb-4 group">
+              <div className="relative w-16 h-16 transition-transform group-hover:scale-105">
+                <Image
+                  src="/cannheal-logo.png"
+                  alt="CANNHEAL Logo"
+                  fill
+                  sizes="64px"
+                  className="object-contain"
+                  priority
+                />
               </div>
-              <span className="text-2xl font-bold">CANNHEAL</span>
             </Link>
             <p className="text-white/80 text-sm mb-6">
               Veterinarian-formulated, THC-free CBD for pets. Built for retailers who care about compliance.

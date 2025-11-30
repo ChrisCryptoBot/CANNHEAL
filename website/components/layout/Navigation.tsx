@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X, ShoppingCart, User } from 'lucide-react'
 import { usePathname } from 'next/navigation'
@@ -25,12 +26,16 @@ export function Navigation() {
         <div className="flex items-center justify-between h-18 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-primary rounded-full flex items-center justify-center transition-transform group-hover:scale-105">
-              <span className="text-white text-2xl md:text-3xl font-bold">C</span>
+            <div className="relative w-12 h-12 md:w-16 md:h-16 transition-transform group-hover:scale-105">
+              <Image
+                src="/cannheal-logo.png"
+                alt="CANNHEAL Logo"
+                fill
+                sizes="(max-width: 768px) 48px, 64px"
+                className="object-contain"
+                priority
+              />
             </div>
-            <span className="text-xl md:text-2xl font-bold text-primary">
-              CANNHEAL
-            </span>
           </Link>
 
           {/* Desktop Navigation */}

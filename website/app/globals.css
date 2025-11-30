@@ -44,7 +44,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primary-hover hover:scale-105 active:scale-98;
+    @apply btn bg-primary text-white hover:bg-primary-hover hover:scale-105 active:scale-95;
     @apply focus:ring-primary;
   }
 

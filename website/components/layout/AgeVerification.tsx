@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 
@@ -73,8 +74,15 @@ export function AgeVerification() {
       <div className="bg-white rounded-2xl p-8 md:p-12 max-w-md mx-4 shadow-glass animate-scale-up">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">C</span>
+          <div className="relative w-24 h-24">
+            <Image
+              src="/cannheal-logo.png"
+              alt="CANNHEAL Logo"
+              fill
+              sizes="96px"
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
 
