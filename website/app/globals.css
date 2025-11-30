@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CANNHEAL Global Styles */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-text-primary antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Accessibility: Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Glass Morphism (Navigation Only) */
+  .glass {
+    @apply backdrop-blur-xl bg-white/85 border-b border-border/50;
+  }
+
+  /* Button Base Styles */
+  .btn {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover hover:scale-105 active:scale-98;
+    @apply focus:ring-primary;
+  }
+
+  .btn-secondary {
+    @apply btn bg-transparent border-2 border-primary text-primary hover:bg-primary/10;
+    @apply focus:ring-primary;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-primary hover:text-primary-hover hover:underline;
+    @apply p-2;
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-background-card rounded-2xl p-6 shadow-card;
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  /* Trust Badge */
+  .trust-badge {
+    @apply bg-primary/5 border border-primary/10 rounded-lg px-4 py-3;
+    @apply flex items-center gap-2;
+  }
+
+  /* Input Styles */
+  .input {
+    @apply w-full bg-white border border-border rounded-lg px-4 py-3;
+    @apply transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10;
+  }
+
+  .input-error {
+    @apply border-error focus:border-error focus:ring-error/10;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section Spacing */
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  /* Heading Styles */
+  .heading-1 {
+    @apply text-fluid-5xl font-bold text-text-primary;
+  }
+
+  .heading-2 {
+    @apply text-fluid-3xl font-semibold text-text-primary;
+  }
+
+  .heading-3 {
+    @apply text-fluid-xl font-semibold text-text-primary;
+  }
+
+  /* Link Styles */
+  .link {
+    @apply text-primary hover:text-primary-hover transition-colors duration-200;
+    @apply underline-offset-4 hover:underline;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 200ms ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 200ms ease-in-out;
+  }
+
+  .animate-scale-up {
+    animation: scaleUp 200ms ease-in-out;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-text-tertiary;
+  }
+}
+
+/* Keyframes are defined in tailwind.config.ts */

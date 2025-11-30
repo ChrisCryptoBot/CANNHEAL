@@ -1,0 +1,391 @@
+// CANNHEAL Database Schema
+// PostgreSQL via Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String?
+  name         String?
+  role         UserRole  @default(CUSTOMER)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  wholesaleAccount WholesaleAccount?
+  orders           Order[]
+  cart             Cart?
+
+  @@index([email])
+}
+
+enum UserRole {
+  CUSTOMER
+  WHOLESALE
+  ADMIN
+}
+
+// ============================================================================
+// WHOLESALE ACCOUNTS
+// ============================================================================
+
+model WholesaleAccount {
+  id           String           @id @default(cuid())
+  userId       String           @unique
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  businessName String
+  taxId        String           // EIN/Tax ID
+  businessType String           // retailer, vet, distributor
+  phone        String?
+
+  status       WholesaleStatus  @default(PENDING)
+  approvedAt   DateTime?
+  pricingTier  PricingTier      @default(STANDARD)
+  creditTerms  String?          // "NET30", etc.
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([status])
+  @@index([taxId])
+}
+
+enum WholesaleStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum PricingTier {
+  STANDARD     // 40% margin
+  PREFERRED    // 50% margin
+  DISTRIBUTOR  // 60% margin
+}
+
+// ============================================================================
+// PRODUCTS
+// ============================================================================
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  tagline     String?
+  description String          @db.Text
+
+  category    ProductCategory
+  petType     PetType         @default(ALL)
+
+  // Pricing (in cents to avoid floating point issues)
+  retailPrice      Int        // Cents
+  wholesalePrice   Int        // Cents
+
+  // CBD Info
+  cbdMgPerServing  Int
+  servingsPerUnit  Int
+
+  // Inventory
+  sku       String   @unique
+  inStock   Boolean  @default(true)
+
+  // Media
+  images    String[] // Array of image URLs
+
+  // Relations
+  variants  ProductVariant[]
+  coas      COA[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([petType])
+}
+
+enum ProductCategory {
+  OIL
+  CHEW
+  TOPICAL
+  SPRAY
+}
+
+enum PetType {
+  DOG
+  CAT
+  ALL
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  name           String  // "30ml", "60ml", "150mg", "300mg"
+  sku            String  @unique
+  retailPrice    Int     // Cents
+  wholesalePrice Int     // Cents
+  inStock        Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sku])
+}
+
+// ============================================================================
+// COA & COMPLIANCE
+// ============================================================================
+
+model COA {
+  id          String   @id @default(cuid())
+  batchNumber String   @unique
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Lab Info
+  labName     String
+  testDate    DateTime
+
+  // Results
+  cbdContent  Float    // Percentage
+  thcContent  Float    // Should be 0.0 or ND (non-detect)
+  passStatus  Boolean  @default(true)
+
+  // Contaminants
+  pesticides         Boolean @default(true)  // true = passed
+  heavyMetals        Boolean @default(true)
+  microbials         Boolean @default(true)
+  residualSolvents   Boolean @default(true)
+
+  // Files
+  pdfUrl      String   // R2/S3 URL
+  qrCodeUrl   String?  // Generated QR code image
+
+  createdAt   DateTime @default(now())
+
+  @@index([batchNumber])
+  @@index([productId])
+}
+
+model License {
+  id             String      @id @default(cuid())
+  type           LicenseType
+  number         String
+  issuedBy       String      // "Texas DSHS"
+  issueDate      DateTime
+  expirationDate DateTime
+  documentUrl    String?     // Scanned license
+  isActive       Boolean     @default(true)
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([type])
+  @@index([expirationDate])
+}
+
+enum LicenseType {
+  CHP_MANUFACTURING
+  RETAIL_HEMP
+  OTHER
+}
+
+// ============================================================================
+// ORDERS & CART
+// ============================================================================
+
+model Order {
+  id           String        @id @default(cuid())
+  orderNumber  String        @unique @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Type
+  orderType    OrderType     @default(RETAIL)
+
+  // Totals (in cents)
+  subtotal     Int
+  tax          Int
+  shipping     Int
+  total        Int
+
+  // Status
+  status       OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  // Shipping
+  shippingAddress Json
+  trackingNumber  String?
+
+  // Items
+  items        OrderItem[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([status])
+}
+
+enum OrderType {
+  RETAIL
+  WHOLESALE
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  variantId String?
+  quantity  Int
+  unitPrice Int     // Cents (price at time of order)
+  totalPrice Int    // Cents
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items     CartItem[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  variantId String?
+  quantity  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cartId])
+  @@index([productId])
+}
+
+// ============================================================================
+// BLOG & CONTENT
+// ============================================================================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String   @db.Text
+  content     String   @db.Text
+
+  category    String
+  author      String
+
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([published])
+}
+
+// ============================================================================
+// RETAIL PARTNERS (For "As Seen In" ticker)
+// ============================================================================
+
+model RetailPartner {
+  id          String   @id @default(cuid())
+  name        String
+  logoUrl     String
+  websiteUrl  String?
+
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// ============================================================================
+// VET SAMPLE REQUESTS
+// ============================================================================
+
+model VetSampleRequest {
+  id            String   @id @default(cuid())
+
+  name          String
+  clinicName    String
+  licenseNumber String
+  email         String
+  phone         String
+  productsInterested String @db.Text
+
+  status        VetSampleStatus @default(PENDING)
+  reviewedAt    DateTime?
+  shippedAt     DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+}
+
+enum VetSampleStatus {
+  PENDING
+  APPROVED
+  SHIPPED
+  REJECTED
+}
