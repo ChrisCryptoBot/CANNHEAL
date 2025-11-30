@@ -1,0 +1,499 @@
+# CBD Pet Products Website Specification v1.1
+*Integrating Original Specification & Enhanced UX/Tech Stack Suggestions*
+
+**Texas-Compliant • THC-Free • B2B-First**
+**Version 1.1 | November 2025**
+
+---
+
+## **1. Executive Summary & Strategic Enhancements**
+
+This specification defines a compliance-first, B2B-centric website for selling THC-free CBD pet products to commercial retailers in Texas and beyond. The site functions primarily as a credibility and lead generation machine rather than a traditional e-commerce store.
+
+### Strategic Objectives
+
+1. **De-risk partnerships:** Demonstrate regulatory compliance to retailers, vets, and payment processors  
+2. **Convert retailers without human intervention:** Self-service wholesale portal with COA verification  
+3. **Establish authority:** Educational content positioning you as a trusted industry resource  
+4. **Payment processor approval:** Clean, compliant presentation that passes underwriting review  
+5. **Optimize User Experience & Conversion:** Implement data-driven UX improvements while maintaining security
+6. **Ensure Technical Robustness & Security:** Build a scalable, secure platform with comprehensive monitoring
+7. **Future-Proof Architecture:** Design composable system for future service integrations
+
+### Core Brand Positioning
+
+"Veterinarian-conscious, THC-free CBD for pets — built for retailers who care about compliance."
+
+---
+
+## **2. Site Architecture**
+
+### 2.1 Complete Site Map
+
+| Route    | Purpose & Content    |
+|---|---|
+| /    | Homepage with hero, trust badges, featured products, retailer CTA    |
+| /products    | Product catalog with filtering (oils, chews, topicals, sprays)    |
+| /products/[slug]  | Product detail with dosing calculator, ingredients, COA link    |
+| /our-standards    | Sourcing, CO2 extraction, testing protocols, certifications    |
+| /lab-results    | Searchable COA database by batch number with PDF viewer    |
+| /texas-compliance   | DSHS licenses, legal summary, THC-free verification, compliance updates    |
+| /for-veterinarians  | Research library, formulation details, clinic partnership info    |
+| /wholesale    | Retailer application form (public-facing)    |
+| /portal    | Protected wholesale portal: pricing, ordering, assets, training    |
+| /resources    | Blog/articles for SEO and education    |
+| /faq    | Frequently asked questions (SEO value + reduces support load)    |
+| /about    | Company story, team, mission, Texas roots    |
+| /contact    | Contact form, business hours, location    |
+| /cart, /checkout    | DTC purchase flow with wholesale upsell    |
+
+### 2.2 User Flow Priorities
+
+**Primary Flow (B2B Retailer):**
+Homepage → Our Standards → Lab Results → Texas Compliance → Wholesale Application → Portal Access
+
+**Secondary Flow (DTC Consumer):**
+Homepage → Products → Product Detail → Cart → Checkout
+
+**Veterinary Flow:**
+Homepage → For Veterinarians → Lab Results → Contact/Wholesale
+
+---
+
+## **3. Core Features by Section: Enhanced UX & Flow**
+
+### **3.1 Homepage**
+
+**Hero Section:**
+- Headline: "Veterinarian-Formulated, THC-Free CBD for Pets — Texas Proud"
+- Subheadline: "Third-party tested. DSHS licensed. Built for retailers who care."
+- Primary CTA: "Become a Retail Partner" (links to /wholesale)
+- Secondary CTA: "Shop Products" (links to /products)
+
+**★ Hero Image Strategy:** Use authentic product-on-shelf photography from real Texas retail partners. Stage only if necessary, replace immediately with real partner photos.
+
+**Trust Badge Row:**
+- "THC-Free Verified"
+- "3rd Party Lab Tested" 
+- "Texas DSHS Licensed"
+- "CO2 Extracted"
+- **★ NASC Seal — DO NOT DISPLAY until actually obtained**
+
+**Retailer Partners Section:**
+- "Trusted by Texas Retailers" heading with logo carousel
+- Auto-updating from Sanity CMS partners collection
+- **Start small:** 2-3 stores enough to launch
+
+**★ ADD IMMEDIATELY: "As Seen In" / "Carried By" Ticker**
+- Scrolling ticker or static logo row
+- Auto-updates when new partners added
+- **Priority order:** Most recognizable names first
+
+**Why Choose Us Section:**
+- 3-column layout: Compliance First, Quality Assured, Retailer Support
+
+**✔ CRITICAL ASSET: Retailer Quick Look One-Pager (PDF Download)**
+- PDF with wholesale pricing, margins, key differentiators
+- QR code to wholesale application
+- Prominent homepage placement
+
+**✔ ENHANCED: Age Gate UX Optimization**
+- Add copy: "Required by Texas DSHS law — not a marketing step"
+- Track bounce rate with GA4 + Hotjar heatmaps
+
+**✔ ENHANCED: Personalization & Segmentation**
+- Returning user detection for tailored CTAs
+- A/B testing on hero section headlines
+
+### **3.2 Products Section**
+
+**Product Listing Page (/products):**
+- Filter sidebar: Category, Pet Type, Strength
+- Sort options: Price, Bestselling, Newest
+- Responsive product card grid
+
+**Product Detail Page (/products/[slug]):**
+- Image gallery with zoom
+- Size/strength selector
+- Interactive Dosing Calculator with disclaimer modal
+- Tabbed content: Description, Ingredients, How to Use, Lab Results
+- COA link to batch-specific results
+
+**Required Disclaimers:**
+- "This product has not been evaluated by the FDA."
+- "Not intended to diagnose, treat, cure, or prevent any disease."
+- "Consult your veterinarian before use."
+
+**✔ ENHANCED: Progressive Enhancement**
+- Offline form support via Service Workers
+- Real-time validation with debounce and haptic feedback
+
+### **3.3 Lab Results / COA Portal**
+
+**✔ KILLER FEATURE: Batch-Specific QR Codes**
+- Unique QR code for each batch
+- Direct links to batch-specific COA pages
+- Downloadable QR images for product labels
+- Scan tracking analytics
+
+**Search Interface:**
+- Batch number search with autocomplete
+- Product and date filters
+
+**Results Display:**
+- COA cards with batch info, status, quick stats
+- PDF viewer and download options
+
+**✔ ENHANCED: SEO Automation**
+- Dynamic sitemaps for batch-specific pages
+- Auto-generated FAQ and product schema via Sanity hooks
+
+### **3.4 Texas Compliance Page**
+
+**Structure:**
+- Our Licenses Section with numbers and expiration dates
+- Texas Hemp Law Summary in plain English
+- Compliance Updates Section with current status
+- Retailer Assurance statement
+
+**✔ ENHANCED: Compliance Monitoring**
+- Auto-fetched DSHS alerts and law changes
+- Dynamic update tracking
+
+### **3.5 Wholesale Portal - SECURITY ENHANCED**
+
+**⚠️ CRITICAL UPDATE: Fraud-Preventive EIN Verification**
+
+**Public Application Page (wholesale):**
+- Benefits overview with margin examples
+- Streamlined form: Business name, EIN/Tax ID, Contact info, Business type
+
+**✦ SECURE Verification Flow:**
+- **Step 1:** User submits form (Cloudflare Turnstile validates)
+- **Step 2:** API validates EIN format and basic business info (~$0.10/lookup)
+- **Step 3:** **INSTANT FEEDBACK, NOT INSTANT ACCESS**
+  - Show: "EIN verified! Your application is being fast-tracked"
+  - Email: "Your wholesale application is being reviewed"
+- **Step 4:** Admin dashboard notification with EIN verification results
+- **Step 5:** Manual approval (typically within 2-4 hours during business days)
+- **Step 6:** Upon approval: Auto-create account, email credentials, welcome kit
+
+**Fallback for Issues:**
+- "We're reviewing your application and will contact you within 24 hours"
+- Manual review pathway for all applications
+
+**✦ BOT PROTECTION:** Cloudflare Turnstile on all form submissions
+
+**Protected Wholesale Portal (/portal) — Requires Login:**
+- Dashboard with account overview and quick reorder
+- Tiered wholesale pricing catalog
+- MOQ enforcement (minimum 100 units)
+- Marketing assets download area
+- Training materials and COA access
+
+**✔ ENHANCED: Security & Monitoring**
+- Rate limiting on API routes (Upstash Rate Limit)
+- CSP headers via next-helmet
+- Suspicious activity monitoring and flagging
+
+### **3.6 For Veterinarians Section**
+
+- Formulation details (non-medical)
+- Research library with published studies
+- Downloadable "CBD for Veterinary Professionals" PDF
+- Veterinary-specific contact form
+
+**✦ LEAD-GEN: Free Vet Sample Request Form**
+- Licensed DVM verification required
+- Manual license review before shipping
+- Sample kit with products, info packet, COAs, pricing
+- Automated follow-up email after delivery
+
+### **3.7 Resources / Blog**
+
+- Article listing with category filtering
+- Categories: Pet Wellness, CBD Education, Retailer Tips, Industry News, Compliance Updates
+- Individual article pages with related posts
+
+**✦ SEO QUICK WINS - Updated for 2025:**
+1. "2025 Texas Hemp Laws for Retailers: Current Status & Compliance Requirements"
+2. "How to Read a Pet CBD COA in 2025 (Free Retailer Checklist)"
+3. "THC-Free vs Broad-Spectrum Pet CBD: Veterinary Perspective"
+
+### **3.8 Cart & Checkout**
+
+**Cart Page (/cart):**
+- Line items with quantity adjusters
+- Subtotal, tax, shipping estimates
+- Navigation CTAs
+
+**✔ B2B CONVERSION: Wholesale Upsell on Checkout**
+- "Are you a business owner? Apply for wholesale pricing and save 40%+ →"
+
+**Checkout Page (/checkout):**
+- Shipping and billing address forms
+- **Payment method selection:**
+  - Option 1 (Default): "Pay by Bank (ACH) — Save 2%" → AeroPay
+  - Option 2: "Pay by Credit Card" → PaymentCloud
+- Order summary sidebar
+- Terms acceptance + Place Order button
+
+**✔ ENHANCED: Payment Processor Monitoring**
+- Real-time status checks for processor availability
+- Graceful fallback between AeroPay → PaymentCloud → DigiPay
+- Conditional UI based on processor status
+
+### **3.9 FAQ Page**
+
+- Accordion-style Q&A with categories
+- Search functionality
+- FAQ schema markup for rich snippets
+
+**Priority Questions:**
+- "Is CBD legal for pets in Texas?"
+- "Will your products make my pet high?"
+- "How do I verify your lab results?"
+- "How do I become a wholesale partner?"
+
+---
+
+## **4. Technical Stack Enhancements**
+
+### **4.1 Recommended Architecture**
+
+| Component | Choice & Rationale |
+|---|---|
+| Framework | Next.js 14+ (App Router) — SSR for SEO, API routes |
+| Styling | Tailwind CSS 3.4+ — Utility-first, design system |
+| Database | PostgreSQL (via Supabase or Neon) — Relational, scalable |
+| ORM | Prisma — Type-safe, migrations |
+| Authentication | NextAuth.js v5 — Credentials + email |
+| Payments (Primary) | AeroPay (ACH) — ~1% fees, "Save 2%" offer |
+| Payments (Backup) | PaymentCloud (Credit Cards) — CBD-approved |
+| EIN Verification | Middesk or TaxJar — ~$0.10/lookup (verification only) |
+| File Storage | Cloudflare R2 — COA PDFs, product images |
+| Email | Resend — Transactional emails |
+| CMS | Sanity — Blog posts, product content |
+| Hosting | Vercel — Optimized for Next.js |
+| Analytics | Google Analytics 4 + Hotjar |
+| Age Verification | Custom modal component — 21+ required |
+
+### **4.2 Enhanced Dependencies**
+
+**package.json additions:**
+```json
+{
+  "dependencies": {
+    "@sentry/nextjs": "^latest",
+    "jest": "^latest",
+    "cypress": "^latest",
+    "@testing-library/react": "^latest",
+    "next-helmet": "^latest"
+  }
+}
+```
+
+**Monitoring & Testing Stack:**
+- **Error Monitoring:** Sentry for frontend/backend errors with breadcrumbs
+- **Testing:** Jest + React Testing Library (unit/component) + Cypress (E2E)
+- **CI/CD:** GitHub Actions for automated testing on PRs
+- **Security:** next-helmet for headers, Upstash for rate limiting
+
+---
+
+## **5. Visual Design System**
+
+*Original specifications remain with enhancements:*
+
+### **5.1-5.4 Color, Typography, Spacing, Effects**
+*[Unchanged from original specification]*
+
+### **✔ ENHANCED: Dark Mode Acceleration**
+- CSS custom variables already structured for easy implementation
+- Respects `prefers-color-scheme` media query
+- Toggle in navigation for Phase 1 (moved up from Phase 2)
+- Adjusted shadows and glass effects for dark mode contrast
+
+---
+
+## **6. Component Specifications**
+
+*Original component specs remain with accessibility enhancements*
+
+### **✔ ENHANCED: Accessibility Auditing**
+- Axe or Lighthouse CI integration in build pipeline
+- Automated heading hierarchy and ARIA label checks
+- Keyboard trap detection for modals
+- Screen reader testing with VoiceOver
+
+---
+
+## **7. Micro-Interactions & Animations**
+
+*Original subtle animation specs remain*
+
+### **✔ ENHANCED: Animation Refinements**
+- Framer Motion for staggered grid loads
+- Reduced motion support enforcement
+- Contextual shake animations (form errors only when not in reduced-motion)
+
+---
+
+## **8. Accessibility Requirements**
+
+*Original WCAG 2.1 AA targets remain*
+
+### **✔ ENHANCED: Automated Compliance**
+- CI-integrated accessibility scanning
+- Focus management testing automation
+- Color contrast ratio enforcement in build process
+
+---
+
+## **9. Performance Optimizations**
+
+*Original Core Web Vitals targets remain*
+
+### **✔ ENHANCED: Sustainability & Performance**
+- AVIF format negotiation for mobile users
+- Low-data usage optimizations for rural retailers
+- Dark mode battery savings on mobile devices
+
+---
+
+## **10. Payment Integration - UPDATED STRATEGY**
+
+### **10.1 Recommended Strategy (November 2025)**
+
+**OPTIMAL SETUP: AeroPay (Primary) + PaymentCloud (Backup) + DigiPay (Tertiary)**
+
+**Processor Comparison:**
+| Processor | Rates | Notes |
+|---|---|---|
+| AeroPay PRIMARY | ~1% (ACH) | Bank transfer, 2-3 day settlement |
+| PaymentCloud Backup | 2.9-3.9% + $0.30 | Credit cards, 30-45 day holds |
+| DigiPay Tertiary | 3.5-4.5% + $0.25 | Fallback if PaymentCloud declines |
+
+### **10.2 Enhanced Checkout Flow**
+- Real-time processor status monitoring
+- Graceful degradation between payment options
+- Prominent ACH incentives ("Save 2%") 
+
+---
+
+## **11. Database Schema**
+
+*Original Prisma schema remains with future-proofing*
+
+### **✔ ENHANCED: Compliance Automation**
+- Cron jobs (Vercel) for license expiration alerts (60-day warning)
+- COA expiration alerts (flag batches >6 months old)
+- Automated compliance monitoring hooks
+
+---
+
+## **12. SEO Configuration**
+
+*Original meta tags and technical SEO remain*
+
+### **✔ ENHANCED: Content Automation**
+- Sanity CMS hooks for auto-generated structured data
+- Dynamic sitemap generation for COA pages
+- Automated internal linking between related content
+
+---
+
+## **13. Deployment Checklist**
+
+### **13.1 Pre-Launch Checklist**
+*[Original 16-point checklist remains with enhanced security verification]*
+
+### **13.2 Post-Launch Tasks**
+*[Original tasks plus enhanced monitoring]*
+
+**Added:**
+- Sentry error tracking configuration
+- Automated accessibility scanning schedule
+- Payment processor status dashboard
+
+---
+
+## **14. Implementation Phases - UPDATED**
+
+### **Phase 1: Secure MVP (Weeks 1-4) — GET LIVE SAFELY**
+- Homepage (with Retailer Quick Look PDF)
+- Products (catalog + detail with dosing calculator)
+- Texas Compliance (licenses + dynamic updates)
+- Lab Results (COA search + batch QR codes)
+- **SECURE Wholesale Application** (EIN verification + manual approval)
+- Basic DTC checkout (AeroPay + PaymentCloud)
+- Age verification modal
+- **Enhanced security and monitoring**
+
+### **Phase 2: Wholesale Portal (Weeks 5-8)**
+- Protected wholesale login
+- Tiered pricing display
+- Wholesale ordering with MOQ
+- Marketing asset downloads
+- **Trigger:** 10-15 approved wholesale applications
+
+### **Phase 3: Content & Advanced Features (Weeks 9-12)**
+- Blog/Resources with CMS
+- SEO quick-win articles
+- For Veterinarians section
+- **Dark mode implementation**
+- Advanced analytics
+
+---
+
+## **15. Budget Estimate - UPDATED**
+
+| Item | One-Time | Monthly |
+|---|---|---|
+| Legal review (compliance) | $1,500 - $3,000 | - |
+| Development (enhanced security) | $9,000 - $17,000 | - |
+| Vercel Pro | - | $20 |
+| Supabase | - | $25 |
+| Cloudflare R2 | - | ~$5 |
+| Resend | - | $20 |
+| Sanity CMS | - | Free tier |
+| Monitoring (Sentry) | - | $26 |
+| **TOTAL (Year 1)** | **$10,500 - $20,000** | **~$96/mo** |
+
+---
+
+## **16. Critical Success Factors - UPDATED**
+
+1. **Legal Review First:** Texas cannabis attorney review ALL copy
+2. **THC-Free Positioning:** Unmistakably clear throughout site  
+3. **COA Transparency:** Every batch has accessible, current COA
+4. **SECURE Onboarding:** Manual approval for wholesale accounts
+5. **Payment Processor Strategy:** Apply to multiple processors early
+6. **Mobile-First Testing:** Retailers use phones between customers
+
+---
+
+## **Compliance Update (As of November 2025)**
+
+**Texas Hemp Laws (SB 3):** Vetoed by Governor Abbott in June 2025. Executive Order issued for increased regulations. THC-free focus remains compliant.
+
+**NASC Certification:** Multiple companies received NASC seals in 2024-2025. Pursue post-launch for trust badge and payment processor approval.
+
+---
+
+## **Future Feature Prioritization**
+
+**Accelerated to Phase 2:**
+- Subscription/auto-ship for DTC retention
+- Retailer locator map (after 20+ partners)
+
+**Enhanced Security Features:**
+- Advanced fraud detection for wholesale applications
+- Multi-factor authentication for portal access
+- Automated compliance auditing
+
+---
+
+*This enhanced specification maintains the original compliance-first, B2B-centric approach while incorporating robust security measures, improved user experience, and future-proof technical architecture.*
+
+— End of Enhanced Specification —
