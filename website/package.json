@@ -30,7 +30,9 @@
     "sharp": "^0.33.4",
     "resend": "^3.5.0",
     "bcryptjs": "^2.4.3",
-    "@types/bcryptjs": "^2.4.6"
+    "@types/bcryptjs": "^2.4.6",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
     "typescript": "^5.5.4",
