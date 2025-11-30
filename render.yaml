@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cannheal-website
+    rootDir: website
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: NODE_VERSION
+        value: 18.0.0
+
