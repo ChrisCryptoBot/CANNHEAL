@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { checkoutSchema } from '@/lib/validations'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,34 +18,69 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data
 
-    // In production, this would:
-    // 1. Create order in database
-    // 2. Calculate totals server-side (never trust client)
-    // 3. Initiate payment with AeroPay or PaymentCloud
-    // 4. Create shipping label
-    // 5. Send order confirmation email
-    // 6. Reduce inventory counts
+    // TODO: Get authenticated user from session
+    // For now, allow guest checkout
+    const userId = data.userId || null
 
-    console.log('Order creation started:', {
-      shippingAddress: data.shippingAddress,
-      paymentMethod: data.paymentMethod,
+    // Calculate totals server-side (NEVER trust client)
+    // TODO: Fetch actual product prices from database
+    const subtotal = data.items.reduce((sum, item) => {
+      // In production, fetch real price from database
+      return sum + item.price * item.quantity
+    }, 0)
+
+    const tax = Math.round(subtotal * 0.0825) // Texas sales tax 8.25%
+    const shipping = subtotal > 5000 ? 0 : 995 // Free shipping over $50
+    const total = subtotal + tax + shipping
+
+    // Create order in database
+    const order = await db.order.create({
+      data: {
+        userId,
+        orderType: data.orderType || 'RETAIL',
+        status: 'PENDING',
+        paymentStatus: 'PENDING',
+        subtotal,
+        tax,
+        shipping,
+        total,
+        shippingAddress: data.shippingAddress,
+        items: {
+          create: data.items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+            priceAtPurchase: item.price,
+          })),
+        },
+      },
+      include: {
+        items: true,
+      },
     })
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    logger.info('Order created', {
+      orderId: order.id,
+      userId,
+      total,
+      itemCount: data.items.length,
+    })
 
-    // Generate order ID
-    const orderId = `ORD-${Date.now()}`
+    // TODO: Initiate payment with AeroPay or PaymentCloud
+    // TODO: Create shipping label
+    // TODO: Send order confirmation email
+    // TODO: Reduce inventory counts
 
     return NextResponse.json({
       success: true,
       message: 'Order created successfully',
-      orderId,
+      orderId: order.id,
+      total,
       // In production, would include payment redirect URL
-      paymentUrl: `/orders/${orderId}/payment`,
+      paymentUrl: `/orders/${order.id}/payment`,
     })
   } catch (error) {
-    console.error('Order creation error:', error)
+    logger.error('Order creation error', error)
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }

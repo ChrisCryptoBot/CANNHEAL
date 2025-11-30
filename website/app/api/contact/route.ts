@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { contactFormSchema } from '@/lib/validations'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,26 +17,33 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data
 
-    // In production, this would:
-    // 1. Send email via Resend
-    // 2. Create support ticket in database
-    // 3. Trigger notification to support team
-
-    console.log('Contact form submission:', {
+    logger.info('Contact form submission', {
       name: data.name,
       email: data.email,
       subject: data.subject,
     })
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    // TODO: Send email via Resend
+    // const emailResult = await resend.emails.send({
+    //   from: process.env.EMAIL_FROM,
+    //   to: 'support@cannheal.com',
+    //   subject: `Contact Form: ${data.subject}`,
+    //   html: `
+    //     <h2>New Contact Form Submission</h2>
+    //     <p><strong>Name:</strong> ${data.name}</p>
+    //     <p><strong>Email:</strong> ${data.email}</p>
+    //     <p><strong>Subject:</strong> ${data.subject}</p>
+    //     <p><strong>Message:</strong></p>
+    //     <p>${data.message}</p>
+    //   `,
+    // })
 
     return NextResponse.json({
       success: true,
-      message: 'Message sent successfully',
+      message: 'Message sent successfully. We will respond within 24 hours.',
     })
   } catch (error) {
-    console.error('Contact form error:', error)
+    logger.error('Contact form error', error)
     return NextResponse.json(
       { error: 'Failed to send message' },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { vetSampleRequestSchema } from '@/lib/validations'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,30 +18,38 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data
 
-    // In production, this would:
-    // 1. Verify veterinary license via state database
-    // 2. Create sample request in database
-    // 3. Generate shipping label
-    // 4. Send confirmation email
-    // 5. Notify fulfillment team
-
-    console.log('Vet sample request received:', {
-      name: data.name,
-      clinicName: data.clinicName,
-      licenseNumber: data.licenseNumber,
-      email: data.email,
+    // Create sample request in database
+    const sampleRequest = await db.vetSampleRequest.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        clinicName: data.clinicName,
+        licenseNumber: data.licenseNumber,
+        licenseState: data.licenseState,
+        phone: data.phone,
+        shippingAddress: data.shippingAddress,
+        status: 'PENDING',
+      },
     })
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    logger.info('Vet sample request created', {
+      requestId: sampleRequest.id,
+      clinicName: data.clinicName,
+      licenseState: data.licenseState,
+    })
+
+    // TODO: Verify veterinary license via state database API
+    // TODO: Generate shipping label
+    // TODO: Send confirmation email
+    // TODO: Notify fulfillment team
 
     return NextResponse.json({
       success: true,
-      message: 'Sample request submitted successfully',
-      requestId: `VSR-${Date.now()}`,
+      message: 'Sample request submitted successfully. We will verify your license and ship within 3-5 business days.',
+      requestId: sampleRequest.id,
     })
   } catch (error) {
-    console.error('Vet sample request error:', error)
+    logger.error('Vet sample request error', error)
     return NextResponse.json(
       { error: 'Failed to process sample request' },
       { status: 500 }
